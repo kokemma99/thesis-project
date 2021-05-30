@@ -1,0 +1,30 @@
+#Microplastics input file
+#file containing input properties of microplastics to be modelled
+#
+#
+#
+#
+#
+#
+ID,name,composition,density_kg_m3,MPshape,sizeBin,diameter_um,length_a_um,length_b_um,length_c_um
+1,MF1,COT,1540,fibre,a,0.20,16.5,0,0
+1,MF1,COT,1540,fibre,b,0.21,17.2,0,0
+1,MF1,COT,1540,fibre,c,0.22,19.5,0,0
+1,MF1,COT,1540,fibre,d,0.23,20.2,0,0
+1,MF1,COT,1540,fibre,e,0.25,23.9,0,0
+2,MF2,PE,980,fibre,a,0.20,13.5,0,0
+2,MF2,PE,980,fibre,b,0.21,13.6,0,0
+2,MP2,PE,980,fibre,c,0.22,13.9,0,0
+2,MF2,PE,980,fibre,d,0.23,14.2,0,0
+2,MF2,PE,980,fibre,e,0.25,14.9,0,0
+3,MF3,RAY,1600,fibre,a,0.8,16.5,0,0
+3,MF3,RAY,1600,fibre,b,0.81,16.7,0,0
+3,MF3,RAY,1600,fibre,c,0.82,16.9,0,0
+3,MF3,RAY,1600,fibre,d,0.83,17.2,0,0
+3,MF3,RAY,1600,fibre,e,0.85,17.9,0,0
+4,SPM1,mixed,2000,sphere,a,0.5,0,0,0
+4,SPM1,mixed,2000,sphere,b,0.5,0,0,0
+4,SPM1,mixed,2000,sphere,c,0.5,0,0,0
+4,SPM1,mixed,2000,sphere,d,0.5,0,0,0
+4,SPM1,mixed,2000,sphere,e,0.5,0,0,0
+
