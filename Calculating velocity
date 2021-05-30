@@ -1,0 +1,109 @@
+import matplotlib.pyplot as plt
+import numpy as np
+from numpy.core.fromnumeric import diagonal, mean
+from numpy.lib.function_base import average
+from scipy.special import comb
+import math
+import pandas as pd
+import scipy.stats as stats
+
+# calculating the speed of the fiber using the Stokes method
+def stokes_speed(smallest_diam, largest_diam, smallest_length, highest_length, MP_particle):
+    mu_w_21C_kg_ms = 0.9764/1000
+    g_m_s2 = 9.81
+    density_w_21C_kg_m3 = 998   
+    diameter_um_list = []
+    
+    # make a list of all the diameters to loop over them
+    for x in np.arange(smallest_diam, largest_diam, (highest_length-smallest_length)/50):
+        diameter_um_list.append(x)
+
+    # make a list of all the lengths to loop over them
+    length_um_list = []
+    for i in np.arange(smallest_length, highest_length, (highest_length-smallest_length) / 50 ):
+        length_um_list.append(i)
+
+    # calculating the speed using the Stokes method
+    radius_list = []
+    v_stok = []
+    for i in length_um_list:
+        MP_radius_m = i*10**-6/2
+        radius_list.append(MP_radius_m)
+        vStokes = 2/9*abs((MP_particle-density_w_21C_kg_m3)/mu_w_21C_kg_ms)*g_m_s2*(MP_radius_m)**2
+        v_stok.append(vStokes)
+    mean_stok = average(v_stok)
+    return mean_stok
+
+# calculating the speed of the fiber using 
+def velocity_speed(smallest_diam, largest_diam, smallest_length, highest_length, MP_particle):
+    mu_w_21C_kg_ms = 0.9764/1000
+    g_m_s2 = 9.81
+    density_w_21C_kg_m3 = 998   
+    diameter_um_list = []
+    
+    # make a list of all the diameters to loop over them   
+    for x in np.arange(smallest_diam, largest_diam, (smallest_length-highest_length)/50):
+        diameter_um_list.append(x)
+
+    # make a list of all the lengths to loop over them
+    length_um_list = []
+    for i in np.arange(smallest_length, highest_length, (highest_length-smallest_length) / 50 ):
+        length_um_list.append(i)
+
+    # making a list of the radius of the fiber
+    radius_list = []
+    v_stok = []
+    for i in length_um_list:
+        MP_radius_m = i*10**-6/2
+        radius_list.append(MP_radius_m)
+
+    # calculate the speed using the adjusted method
+    Re_list = []
+    Fiber_speed = [] 
+    for a,b in zip(radius_list,length_um_list):
+        Re = (6*10**-7) * (a*2) / mu_w_21C_kg_ms
+        CSF = a/math.sqrt(a*(b*10**-6))
+        C_d_s = (4.7 / math.sqrt(Re)) + math.sqrt(CSF)
+        fib_speed = math.sqrt((4/3)*((a*2)/C_d_s)*abs((MP_particle-density_w_21C_kg_m3)/density_w_21C_kg_m3)*g_m_s2)
+        Fiber_speed.append(fib_speed)
+    return Fiber_speed
+
+
+# cotton speed using adjusted method horizontally and vertically orientated
+cotton_speed = average(velocity_speed(0.20, 0.25, 16.5, 23.9, 1540))
+cotton_speed_adj = average(velocity_speed(16.5, 23.9, 0.20, 0.25, 1540))
+
+# cotton speed using stokes method, using smaller and larger radius
+cotton_stokes = stokes_speed(0.20, 0.25, 16.5, 23.9, 1540)
+cotton_stokes_adj = stokes_speed(16.5, 23.9, 0.20, 0.25, 1540)
+
+# polyester speed using adjusted method horizontally and vertically orientated
+polyester_speed = average(velocity_speed(0.20, 0.25, 13.5, 14.9, 980))
+polyester_speed_adj = average(velocity_speed(13.5, 14.9, 0.20, 0.25, 980))
+
+# polyester speed using stokes method, using smaller and larger radius
+polyester_stokes = stokes_speed(0.20, 0.25, 13.5, 14.9, 980)
+polyester_stokes_adj = stokes_speed(13.5, 14.9, 0.20, 0.25, 980)
+
+# rayon speed using adjusted method horizontally and vertically orientated
+rayon_speed = average(velocity_speed(0.80, 0.85, 16.5, 17.9, 1600))
+rayon_speed_adj = average(velocity_speed(16.5, 17.9, 0.80, 0.85,1600))
+
+# rayon speed using stokes method, using smaller and larger radius
+rayon_stokes = stokes_speed(0.80, 0.85, 16.5, 17.9, 1600)
+rayon_stokes_adj = stokes_speed(16.5, 17.9, 0.80, 0.85,1600)
+
+# creating the dataframe
+df = pd.DataFrame(columns=['Stokes method (large radius)', 'Stokes method (small radius)', 'Fiber method (vertical)', 'Fiber method (horizontal)'], index = ['Cotton', 'Polyester', 'Rayon'])
+df['Stokes method (large radius)'] = [cotton_stokes, polyester_stokes, rayon_stokes]
+df['Stokes method (small radius)'] = [cotton_stokes_adj, polyester_stokes_adj, rayon_stokes_adj] 
+df['Fiber method (vertical)']= [cotton_speed, polyester_speed, rayon_speed]
+df['Fiber method (horizontal)'] = [cotton_speed_adj,polyester_speed_adj, rayon_speed_adj]
+
+df.plot.bar()
+display(df)
+
+# doing the statistics to see if there is a significant difference
+v1 = df['Fiber method (horizontal)']
+v2 = df['Stokes method (small radius)']
+stats.mannwhitneyu(v1,v2)
